@@ -16,8 +16,11 @@
 	<version>1.0</version>
 	<name>jsonl</name>
 
+
 	<properties>
 		<java.version>17</java.version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 	</properties>
 
 	<dependencies>
@@ -65,8 +68,16 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<configuration>
-					<executable>true</executable>
-					<jvmArguments>-Dfile.encoding=UTF8</jvmArguments>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<testSourceDirectory>${basedir}/src/test/java</testSourceDirectory>
+					<argLine>-ea -Dfile.encoding=UTF-8 -Dstdout.encoding=UTF-8 -Dstderr.encoding=UTF-8</argLine>
+					<encoding>UTF-8</encoding>
 				</configuration>
 			</plugin>
 
