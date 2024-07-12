@@ -18,9 +18,9 @@ public class ReaderBeanFactory {
 
 	public IReader getReaderBean(String fileFormat, Reader reader, ApplicationArguments args) {
 
-		IReaderConfig iReaderConfig = beanFactory.getBean(fileFormat + "-config", IReaderConfig.class);
+		IReaderConfig iReaderConfig = this.beanFactory.getBean(fileFormat + "-config", IReaderConfig.class);
 
-		return (IReader) beanFactory.getBean(fileFormat, reader, iReaderConfig.getConfig(args));
+		return (IReader) this.beanFactory.getBean(fileFormat, reader, iReaderConfig.getConfig(args));
 
 	}
 

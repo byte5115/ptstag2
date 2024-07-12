@@ -1,0 +1,7 @@
+run mvn package to get the jar file 
+
+
+then run 
+java -jar <jar> --spaceAfterSep --ignoreBlankString --continueOnError --trimSpaces --removeRegex="|" --sep="," --informat=CSV --outformat=JSON --force "DSV input 1.txt" "JSONL output.jsonl"
+
+java -jar <jar> --spaceAfterSep --ignoreBlankString --continueOnError --trimSpaces --removeRegex="," --soureRegexReplace=[|] --targetRegexReplace=, --sep="|" --informat=CSV --outformat=JSON --force "DSV input 1.txt" "JSONL output.jsonl"

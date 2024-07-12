@@ -29,7 +29,7 @@ public class CsvReaderConfigImpl implements IReaderConfig {
 		HashMap<String, String> map = new HashMap<String, String>();
 
 		if (args.containsOption("sep"))
-			map.put(SEPARATOR_KEY, args.getOptionValues("separator").get(0));
+			map.put(SEPARATOR_KEY, args.getOptionValues("sep").get(0));
 
 		if (args.containsOption("quote"))
 			map.put(QUOTE_CHAR_KEY, args.getOptionValues("quote").get(0));
@@ -37,10 +37,10 @@ public class CsvReaderConfigImpl implements IReaderConfig {
 		if (args.containsOption("esc"))
 			map.put(ESCAPE_CHAR_KEY, args.getOptionValues("esc").get(0));
 		
-		if (args.containsOption("iquote"))
+		if (args.containsOption("ignoreQuote"))
 			map.put(IGNORE_QUOTATIONS_KEY, String.valueOf(true));
 
-		if (args.containsOption("ileading"))
+		if (args.containsOption("ignoreLeading"))
 			map.put(IGNORE_LEADING_WHITESPACE_KEY, String.valueOf(true));
 
 		if (args.containsOption("addFormats"))

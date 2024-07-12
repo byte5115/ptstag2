@@ -1,6 +1,5 @@
 package com.pstag.jsonl.reader.impl;
 
-
 import static com.pstag.jsonl.reader.impl.CsvReaderConfigImpl.ADDITIONAL_DATE_FORMATS_KEY;
 import static com.pstag.jsonl.reader.impl.CsvReaderConfigImpl.ESCAPE_CHAR_KEY;
 import static com.pstag.jsonl.reader.impl.CsvReaderConfigImpl.IGNORE_LEADING_WHITESPACE_KEY;
@@ -33,105 +32,82 @@ import com.opencsv.ICSVParser;
 import com.pstag.jsonl.reader.IReader;
 
 @Component("CSV")
-@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE )
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class CsvReaderImpl implements IReader {
-	
+
 	private static final List<DateTimeFormatter> DEFAULT_DATE_FORMATTERS = Arrays.asList(
-            DateTimeFormatter.ofPattern("yyyy-MM-dd"),
-            DateTimeFormatter.ofPattern("yyyy/MM/dd"),
-            DateTimeFormatter.ofPattern("dd/MM/yyyy"),
-            DateTimeFormatter.ofPattern("dd-MM-yyyy")
-    );	
+			DateTimeFormatter.ofPattern("yyyy-MM-dd"), DateTimeFormatter.ofPattern("yyyy/MM/dd"),
+			DateTimeFormatter.ofPattern("dd/MM/yyyy"), DateTimeFormatter.ofPattern("dd-MM-yyyy"));
 
 	private final CSVReader csvReader;
 
 	private final String[] headers;
 
 	private final Stream<List<?>> stream;
-	
-	private final List<DateTimeFormatter> dateTimeFormatters ; 
+
+	private final List<DateTimeFormatter> dateTimeFormatters;
 
 	public CsvReaderImpl(Reader reader, Map<String, String> properties) throws Exception {
 
 		this.csvReader = initCsvReader(reader, properties);
 
 		this.headers = csvReader.readNext();
-		
-		this.dateTimeFormatters = initDateFormatter(properties) ;
 
-		this.stream = initStream(csvReader) ; 
+		this.dateTimeFormatters = initDateFormatter(properties);
+
+		this.stream = initStream(csvReader);
 	}
-	
-	private CSVReader initCsvReader(Reader reader, Map<String, String> properties ) 
-	{
-		String quoteChar = properties.getOrDefault(
-				QUOTE_CHAR_KEY, 
-				String.valueOf(ICSVParser.DEFAULT_QUOTE_CHARACTER)) ;		
-		
-		String escapeChar = properties.getOrDefault(
-				ESCAPE_CHAR_KEY, 
-				String.valueOf(ICSVParser.DEFAULT_ESCAPE_CHARACTER)) ;	
-		
-		String separatorChar = properties.getOrDefault(
-				SEPARATOR_KEY, 
-				String.valueOf(ICSVParser.DEFAULT_SEPARATOR)) ;
-		
-		String ignoreQuotations = properties.getOrDefault(
-				IGNORE_QUOTATIONS_KEY, 
-				String.valueOf(ICSVParser.DEFAULT_IGNORE_QUOTATIONS)) ;
-		
-		String ignoreLeadingWhitespace = properties.getOrDefault(
-				IGNORE_LEADING_WHITESPACE_KEY, 
-				String.valueOf(ICSVParser.DEFAULT_IGNORE_LEADING_WHITESPACE)) ;
-		
-		return new CSVReaderBuilder(reader)
-				.withSkipLines(0)
-				.withCSVParser(
-						new CSVParserBuilder()
-						.withSeparator(separatorChar.charAt(0))
-						.withQuoteChar(quoteChar.charAt(0))
-						.withEscapeChar(escapeChar.charAt(0))
+
+	private CSVReader initCsvReader(Reader reader, Map<String, String> properties) {
+		String quoteChar = properties.getOrDefault(QUOTE_CHAR_KEY, String.valueOf(ICSVParser.DEFAULT_QUOTE_CHARACTER));
+
+		String escapeChar = properties.getOrDefault(ESCAPE_CHAR_KEY,
+				String.valueOf(ICSVParser.DEFAULT_ESCAPE_CHARACTER));
+
+		String separatorChar = properties.getOrDefault(SEPARATOR_KEY, String.valueOf(ICSVParser.DEFAULT_SEPARATOR));
+
+		String ignoreQuotations = properties.getOrDefault(IGNORE_QUOTATIONS_KEY,
+				String.valueOf(ICSVParser.DEFAULT_IGNORE_QUOTATIONS));
+
+		String ignoreLeadingWhitespace = properties.getOrDefault(IGNORE_LEADING_WHITESPACE_KEY,
+				String.valueOf(ICSVParser.DEFAULT_IGNORE_LEADING_WHITESPACE));
+
+		return new CSVReaderBuilder(reader).withSkipLines(0)
+				.withCSVParser(new CSVParserBuilder().withSeparator(separatorChar.charAt(0))
+						.withQuoteChar(quoteChar.charAt(0)).withEscapeChar(escapeChar.charAt(0))
 						.withIgnoreQuotations(Boolean.valueOf(ignoreQuotations))
-						.withIgnoreLeadingWhiteSpace(Boolean.valueOf(ignoreLeadingWhitespace))
-						.build())
+						.withIgnoreLeadingWhiteSpace(Boolean.valueOf(ignoreLeadingWhitespace)).build())
 				.build();
 	}
 
-	
-	private List<DateTimeFormatter> initDateFormatter( Map<String, String> properties)
-	{		
-		List<DateTimeFormatter> list = new ArrayList<>() ;
+	private List<DateTimeFormatter> initDateFormatter(Map<String, String> properties) {
+		List<DateTimeFormatter> list = new ArrayList<>();
 
-		String additionalFormats = properties.getOrDefault(ADDITIONAL_DATE_FORMATS_KEY, "") ;
-		
-		// user based format takes higher priority than the default formats  
-        if (StringUtils.isNotBlank(additionalFormats)) {
-            String[] formats = additionalFormats.split(",");
-            for (String format : formats) {
-            	list.add(DateTimeFormatter.ofPattern(format.trim()));
-            }
-        }
-        
-        list.addAll(DEFAULT_DATE_FORMATTERS) ; 
-        
-        return list ; 	
+		String additionalFormats = properties.getOrDefault(ADDITIONAL_DATE_FORMATS_KEY, "");
+
+		// user based format takes higher priority than the default formats
+		if (StringUtils.isNotBlank(additionalFormats)) {
+			String[] formats = additionalFormats.split(",");
+			for (String format : formats) {
+				list.add(DateTimeFormatter.ofPattern(format.trim()));
+			}
+		}
+
+		list.addAll(DEFAULT_DATE_FORMATTERS);
+
+		return list;
 	}
-	
-	private Stream<List<?>> initStream(CSVReader csvReader)  
-	{	
-		return StreamSupport.stream(
-				Spliterators.spliteratorUnknownSize(
-						csvReader.iterator(), 
-						Spliterator.NONNULL),
-						false) 
-				.map( this::checkDate ) ;		
+
+	private Stream<List<?>> initStream(CSVReader csvReader) {
+		return StreamSupport
+				.stream(Spliterators.spliteratorUnknownSize(csvReader.iterator(), Spliterator.NONNULL), false)
+				.map(this::parseData);
 	}
-	
-	private List<?> checkDate(String[] values) {
-		return Arrays
-				.asList(values)
-				.stream()
-				.map(value -> {
+
+	private List<?> parseData(String[] values) {
+		return Arrays.asList(values).stream().map(value -> {
+
+			// check if it is date
 			for (DateTimeFormatter formatter : this.dateTimeFormatters) {
 				try {
 					// is a date
@@ -140,7 +116,13 @@ public class CsvReaderImpl implements IReader {
 					// go to the next
 				}
 			}
-			// not a date 
+
+			// check if it numeric
+			if (StringUtils.isNumeric(value)) {
+				return parseToNumericType(value) ;
+			}
+
+			// return as it is
 			return value;
 		}).toList();
 	}
@@ -160,4 +142,44 @@ public class CsvReaderImpl implements IReader {
 		this.csvReader.close();
 	}
 
+	public static Number parseToNumericType(String input) {
+
+		try {
+			return Byte.parseByte(input);
+		} catch (NumberFormatException e) {
+			// Not a valid Byte
+		}
+
+		try {
+			return Short.parseShort(input);
+		} catch (NumberFormatException e) {
+			// Not a valid Byte
+		}
+
+		try {
+			return Integer.parseInt(input);
+		} catch (NumberFormatException e) {
+			// Not a valid Integer
+		}
+
+		try {
+			return Double.parseDouble(input);
+		} catch (NumberFormatException e) {
+			// Not a valid Double
+		}
+
+		try {
+			return Float.parseFloat(input);
+		} catch (NumberFormatException e) {
+			// Not a valid Float
+		}
+
+		try {
+			return Long.parseLong(input);
+		} catch (NumberFormatException e) {
+			// Not a valid Long
+		}
+
+		return null;
+	}
 }

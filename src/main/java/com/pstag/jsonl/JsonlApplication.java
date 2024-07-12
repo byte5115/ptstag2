@@ -34,20 +34,28 @@ public class JsonlApplication implements ApplicationRunner {
 
 	@Override
 	public void run(ApplicationArguments args) throws Exception {
-
+			
 		List<String> argSet = args.getNonOptionArgs();
 
 		if (argSet.size() < 2) {
 			System.out.println("Usage: java -jar <jar> " 
-					+ "[--informat=<input file format>] "  // CSV only for now 
-					+ "[--outformat=<output file format>] " // JSON only for now
+					+ "[--inFormat=<input file format>] "  // CSV only for now 
+					+ "[--outFormat=<output file format>] " // JSON only for now
 					+ "[--buffersize=<buffer size>] " // JSON only for now
-					+ "[--sep=<separator>] " 
-					+ "[--qoute=<quote character>] "
-					+ "[--esc=<escape character>] " 
+					+ "[--removeRegex=<string to be removed in the values in output file>] " // remove chars from output file
+					+ "[--soureRegexReplace=<string to be replaced in the values in output file>] " 
+					+ "[--targetRegexReplace=<replacement string to for soureRegexReplace>] " 
+					+ "[--sep=<separator>] " // separator char used input files 
+					+ "[--quote=<quote character>] " // quote char used input files 
+					+ "[--esc=<escape character>] "  // esc char used input files
 					+ "[--addFormats=<additional date formats comma separated>] "
-					+ "[--iquote] " // ignore quotations
-					+ "[--ileading] " // ignore leading white space
+					+ "[--outputDateFormat=<date format for output file>] "
+					+ "[--trimSpaces] " // remove leading space in output file 
+					+ "[--ignoreBlankString] " // ignore blank string in output file  
+					+ "[--spaceAfterSep] " // add space after value separator when jsonifying 					
+					+ "[--continueOnError] " // ignore exception when jsonifying
+					+ "[--ignoreQuote] " // ignore quotations when processing input files
+					+ "[--ignoreLeading] " // ignore leading white space when processing input files
 					+ "[--force] " // force override
 					+ "[input files...] <output file>");
 			return;
@@ -65,19 +73,19 @@ public class JsonlApplication implements ApplicationRunner {
 			return ; 
 		}
 
-		if (args.getOptionNames().contains("informat")) {
-			inputFormat = args.getOptionValues("informat").get(0);
+		if (args.getOptionNames().contains("inFormat")) {
+			inputFormat = args.getOptionValues("inFormat").get(0);
 		}
 
-		if (args.getOptionNames().contains("outformat")) {
-			outputFormat = args.getOptionValues("outformat").get(0);
+		if (args.getOptionNames().contains("outFormat")) {
+			outputFormat = args.getOptionValues("outFormat").get(0);
 		}
 
 		if (args.getOptionNames().contains("buffersize")) {
 			bufferSize = Integer.parseInt(args.getOptionValues("buffersize").get(0));
 		}
 		
-		IConverter iconverter = converterBeanFactory.getConverterBean(outputFormat);
+		IConverter iconverter = converterBeanFactory.getConverterBean(outputFormat, args);
 
 		try (FileWriter fileWriter = new FileWriter(outputFilename);
 				BufferedWriter bufferedWriter = new BufferedWriter(fileWriter , bufferSize)) {
@@ -95,7 +103,7 @@ public class JsonlApplication implements ApplicationRunner {
 					stream.forEach(dataRow -> {
 						try {
 							bufferedWriter.append(iconverter.convert(headers, dataRow));
-							bufferedWriter.append("\n");
+							bufferedWriter.newLine() ;
 						} catch (IOException e) {
 							e.printStackTrace();
 						}
