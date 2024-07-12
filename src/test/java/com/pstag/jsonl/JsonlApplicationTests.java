@@ -1,10 +1,5 @@
 package com.pstag.jsonl;
 
-import static com.pstag.jsonl.converter.impl.JsonConverterConfigImpl.IGNORE_BLANK_STR_KEY;
-import static com.pstag.jsonl.converter.impl.JsonConverterConfigImpl.REMOVE_REGEX_KEY;
-import static com.pstag.jsonl.converter.impl.JsonConverterConfigImpl.SPACE_AFTER_SEP_KEY;
-import static com.pstag.jsonl.converter.impl.JsonConverterConfigImpl.TRIM_SPACES_KEY;
-import static com.pstag.jsonl.reader.impl.CsvReaderConfigImpl.SEPARATOR_KEY;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.BufferedReader;
@@ -13,7 +8,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;

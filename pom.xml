@@ -13,7 +13,7 @@
 
 	<groupId>com.pstag</groupId>
 	<artifactId>jsonl</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0</version>
 	<name>jsonl</name>
 
 	<properties>
@@ -45,14 +45,6 @@
 			<artifactId>commons-lang3</artifactId>
 		</dependency>
 
-		<!-- Lombok / post processing -->
-		<dependency>
-			<groupId>org.projectlombok</groupId>
-			<artifactId>lombok</artifactId>
-			<optional>true</optional>
-		</dependency>
-
-
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
@@ -73,12 +65,8 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<configuration>
-					<excludes>
-						<exclude>
-							<groupId>org.projectlombok</groupId>
-							<artifactId>lombok</artifactId>
-						</exclude>
-					</excludes>
+					<executable>true</executable>
+					<jvmArguments>-Dfile.encoding=UTF8</jvmArguments>
 				</configuration>
 			</plugin>
 

@@ -1,7 +1,14 @@
-run mvn package to get the jar file 
+run the following command to get jar file 
+
+	mvn package 
+
+NOTE: some test case might due encoding issue in the test case , however it will not effect the end result of json file. In such case run the following command it ignore those test cases
+
+	mvn package -Dmaven.test.failure.ignore=true
 
 
-then run 
-java -jar <jar> --spaceAfterSep --ignoreBlankString --continueOnError --trimSpaces --removeRegex="|" --sep="," --informat=CSV --outformat=JSON --force "DSV input 1.txt" "JSONL output.jsonl"
+The following commands will reproduce the exact some JSONL output.jsonl file
 
-java -jar <jar> --spaceAfterSep --ignoreBlankString --continueOnError --trimSpaces --removeRegex="," --soureRegexReplace=[|] --targetRegexReplace=, --sep="|" --informat=CSV --outformat=JSON --force "DSV input 1.txt" "JSONL output.jsonl"
+	java -jar jsonl.jar --spaceAfterSep --ignoreBlankString --continueOnError --trimSpaces --removeRegex="[|]" --sep="," --informat=CSV --outformat=JSON --force "DSV input 1.txt" "JSONL output.jsonl"
+
+	java -jar jsonl.jar --spaceAfterSep --ignoreBlankString --continueOnError --trimSpaces --removeRegex="[,]" --soureRegexReplace=[|] --targetRegexReplace=, --sep="|" --informat=CSV --outformat=JSON --force "DSV input 1.txt" "JSONL output.jsonl"
