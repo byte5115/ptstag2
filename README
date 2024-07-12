@@ -2,7 +2,7 @@ run the following command to get jar file
 
 	mvn package 
 
-NOTE: some test case might due encoding issue in the test case , however it will not effect the end result of json file. In such case run the following command it ignore those test cases
+NOTE: some test case might due encoding issue, however it will not effect the end result of json file. In such case run the following command it ignore those test cases
 
 	mvn package -Dmaven.test.failure.ignore=true
 
